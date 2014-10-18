@@ -8,8 +8,10 @@ output:
 
 ## Loading and preprocessing the data
 
-```{r}
+```{r, echo=TRUE}
 getwd()
+dataset <- read.csv(unz("activity.zip","activity.csv"))
+summary(dataset)
 
 ```
 
