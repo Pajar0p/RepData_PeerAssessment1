@@ -2,6 +2,10 @@
 
 
 ## Loading and preprocessing the data
+  
+    
+     
+We load the activity dataset into our variable **dataset** and modified the column date into the **class date**.
 
 
 ```r
@@ -14,15 +18,26 @@ dataset$date <- as.Date(dataset$date, format="%Y-%m-%d")
 
 ## What is mean total number of steps taken per day?
 
+For simply calculation we ignore the **NA** in dataset
+
 
 ```r
 omitNaData <- na.omit(dataset)
 
 sData <- ddply(omitNaData, "date", summarise, Sum=sum(steps))
+```
+
+The graph below show the total step taken each day
+
+
+```r
 ggplot(sData, aes(x=date, y=Sum)) + geom_bar(stat="identity")
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+![](./PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+The below result show the of the **Mean** and **Median** respectively of the dataset without considering **NA**
+
 
 ```r
 mean(sData$Sum)
@@ -40,16 +55,20 @@ median(sData$Sum)
 ## [1] 10765
 ```
 
-
-
 ## What is the average daily activity pattern?
+
+The below graph show the average daily activity pattern for the dataset without considering **NA**
+
 
 ```r
 sData <- ddply(omitNaData, "interval", summarise, Mean=mean(steps))
 ggplot(sData, aes(x=interval, y=Mean)) +geom_line()
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+![](./PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+
+The below result show the **max** step daily taken in the dataset without considering **NA**
+
 
 ```r
 sData[sData$Mean==max(sData$Mean),]
@@ -61,6 +80,10 @@ sData[sData$Mean==max(sData$Mean),]
 ```
 
 ## Imputing missing values
+
+In order to make our dataset more closed to really, we are going to take into account the NA in our database  and modified it according with the below list:
+- Replace a **NA** with the specific daily **mean** of the corresponding interval
+- if the specific interval doesn't have a mean, it replaced with the value **0**
 
 
 ```r
@@ -81,11 +104,19 @@ for (i in 1:n) {
 }
 
 sData <- ddply(fullData, "date", summarise, Sum=sum(steps))
+```
 
+
+The below graph show the average daily activity pattern for the database with the NA modification **NA**
+
+```r
 ggplot(sData, aes(x=date, y=Sum)) + geom_bar(stat="identity")
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+![](./PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+
+The below graph show the average daily activity pattern for the dataset with the NA modification **NA**
+
 
 ```r
 mean(sData$Sum)
@@ -107,6 +138,9 @@ median(sData$Sum)
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
+Here we modified our dataset considering the NA modification in order to assign each  entries a level if it the day is a **Weekday** or a **Weekend**.
+
+
 
 ```r
 dayData <- cbind(fullData, Day = weekdays(fullData$date))
@@ -127,11 +161,18 @@ for (i in 1:n) {
 }
 
 sData <- ddply(dayData, c("interval", "Week"), summarise, Mean=mean(steps))
+```
 
+
+The below graph shows the difference between the pattern of a Weekend and Weekday 
+
+
+
+```r
 ggplot(sData, aes(x=interval, y=Mean)) + geom_line() + facet_grid(.~Week)
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+![](./PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
 
 
 
